@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sallama Dedektifi V14.4 (Buton Seçenekli)</title>
+    <title>Sallama Dedektifi V15.0 (FULL BUTON)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -39,20 +39,7 @@
             color: #34495e;
             margin-bottom: 15px;
         }
-        button.cevap-btn {
-            padding: 10px 15px;
-            margin: 5px;
-            border-radius: 5px;
-            border: 1px solid #9b59b6;
-            background-color: #9b59b6;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button.cevap-btn:hover {
-            background-color: #8e44ad;
-        }
-        .secenek-butonu {
+        .secenek-butonu, .cevap-btn {
             padding: 10px 20px;
             margin: 5px;
             border-radius: 5px;
@@ -63,9 +50,20 @@
             transition: background-color 0.2s, color 0.2s;
             font-weight: bold;
         }
+        .cevap-btn {
+            border: 2px solid #9b59b6;
+            background-color: #9b59b6;
+            color: white;
+            margin-top: 15px;
+        }
         .secenek-butonu:hover {
             background-color: #3498db;
             color: white;
+        }
+        .secenek-butonu.active {
+            background-color: #e74c4c;
+            color: white;
+            border-color: #c0392b;
         }
         #sonucAlani {
             margin-top: 25px;
@@ -79,13 +77,6 @@
             font-weight: bold;
             margin-top: 10px;
         }
-        input[type="text"] {
-            width: 98%; 
-            padding: 8px; 
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
         #telifHakkı {
             margin-top: 20px;
             text-align: center;
@@ -97,7 +88,7 @@
 <body>
 
     <div class="container">
-        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.4.4)</h1>
+        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.5.0)</h1>
         
         <div id="diyalogAlani">
             <div class="soru-metni" id="soruMetni"></div>
@@ -123,126 +114,214 @@
         const Harfler = ["A", "B", "C", "D", "E"];
         
         const sorular = [
-            // 0: Şık Sayısı
-            { id: 0, soru: "Soru kaç şıklı? (Cevap: 4 veya 5)", sonraki: 1, key: 'sik_sayisi', placeholder: "4 veya 5" },
+            // 0: Şık Sayısı (BUTON)
+            { id: 0, soru: "Soru kaç şıklı?", sonraki: 1, key: 'sik_sayisi', tip: 'tek', secenekler: [{text: "4 Şık (A-B-C-D)", value: 4}, {text: "5 Şık (A-B-C-D-E)", value: 5}] },
             
             // 1: Şık Tipi (BUTON)
-            { id: 1, soru: "Şıklar sayısal mı yoksa metin mi içeriyor?", sonraki: 2, key: 'tip', secenekler: [{text: "Sayısal", value: "SAYISAL"}, {text: "Metin", value: "METİN"}] },
+            { id: 1, soru: "Şıklar sayısal mı yoksa metin mi içeriyor?", sonraki: 2, key: 'tip', tip: 'tek', secenekler: [{text: "Sayısal", value: "SAYISAL"}, {text: "Metin", value: "METİN"}] },
             
             // 2: Uç Eleme (BUTON)
-            { id: 2, soru: "Sayısal şıklarda, en küçük ve en büyük şık arasında çok büyük bir fark var mı?", sonraki: 21, key: 'uc_eleme_var', secenekler: [{text: "Evet, var", value: "EVET"}, {text: "Hayır, yok", value: "HAYIR"}] },
+            { id: 2, soru: "Sayısal şıklarda, en küçük ve en büyük şık arasında çok büyük bir fark var mı?", sonraki: 21, key: 'uc_eleme_var', tip: 'tek', secenekler: [{text: "Evet, var", value: "EVET"}, {text: "Hayır, yok", value: "HAYIR"}] },
             
-            // 21: Uç Olmayanlar (METİN GİRİŞİ)
-            { id: 21, soru: "Uç değer tuzağı varsa: Hangi şıklar uç değer **DEĞİLDİR** (ortada kalmıştır)?", sonraki: 3, key: 'uc_olmayan_sik', placeholder: "Örn: B VE C" },
+            // 21: Uç Olmayanlar (ÇOKLU ŞIK BUTON)
+            { id: 21, soru: "Uç değer tuzağı varsa: Hangi şıklar uç değer **DEĞİLDİR** (ortada kalmıştır)?", sonraki: 3, key: 'uc_olmayan_sik', tip: 'coklu_sik' },
 
             // 3: Nadir Kelimeler/Yuvarlak Sayılar (BUTON)
-            { id: 3, soru: "Şıklardan biri '9.81' gibi teknik bir sayı içerirken, diğeri '10' gibi yuvarlak bir sayı içeriyor mu?", sonraki: 31, key: 'teknik_sayi_var', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] }, 
+            { id: 3, soru: "Şıklardan biri '9.81' gibi teknik bir sayı içerirken, diğeri '10' gibi yuvarlak bir sayı içeriyor mu?", sonraki: 31, key: 'teknik_sayi_var', tip: 'tek', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] }, 
             
-            // 31: Teknik Sayı Hangi Şıkta? (METİN GİRİŞİ)
-            { id: 31, soru: "Hangi şık küsuratlı teknik sayıyı içeriyor?", sonraki: 4, key: 'teknik_sayi_sik', placeholder: "A, B, C, D veya E" },
+            // 31: Teknik Sayı Hangi Şıkta? (TEK ŞIK BUTON)
+            { id: 31, soru: "Hangi şık küsuratlı teknik sayıyı içeriyor?", sonraki: 4, key: 'teknik_sayi_sik', tip: 'tek_sik' },
 
             // 4: Hepsi/Tümü Kuralı (BUTON)
-            { id: 4, soru: "Şıklardan biri 'Hepsi', 'Tümü' gibi kapsayıcı ifadeler içeriyor mu?", sonraki: 5, key: 'hepsi_tumu_var', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] },
+            { id: 4, soru: "Şıklardan biri 'Hepsi', 'Tümü' gibi kapsayıcı ifadeler içeriyor mu?", sonraki: 5, key: 'hepsi_tumu_var', tip: 'tek', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] },
             
-            // 5: Hangi Şık Hepsi/Tümü İçeriyor? (METİN GİRİŞİ)
-            { id: 5, soru: "Hangi şık, 'Hepsi/Tümü' ifadesini içeriyor?", sonraki: 6, key: 'hepsi_tumu_sik', placeholder: "A, B, C, D veya E" },
+            // 5: Hangi Şık Hepsi/Tümü İçeriyor? (TEK ŞIK BUTON)
+            { id: 5, soru: "Hangi şık, 'Hepsi/Tümü' ifadesini içeriyor?", sonraki: 6, key: 'hepsi_tumu_sik', tip: 'tek_sik' },
             
-            // 6: Aşırı Genelleme/Kısıtlama (METİN GİRİŞİ)
-            { id: 6, soru: "Hangi şıklar 'yalnızca', 'mutlak', 'tek nedeni' gibi çok kısıtlayıcı kelimeler içeriyor?", sonraki: 7, key: 'kisitlayici', placeholder: "A, B, D veya HİÇBİRİ" },
+            // 6: Aşırı Genelleme/Kısıtlama (ÇOKLU ŞIK BUTON)
+            { id: 6, soru: "Hangi şıklar 'yalnızca', 'mutlak', 'tek nedeni' gibi çok kısıtlayıcı kelimeler içeriyor?", sonraki: 7, key: 'kisitlayici', tip: 'coklu_sik_hicbiri' },
 
-            // 7: Çelişki Kuralı (METİN GİRİŞİ)
-            { id: 7, soru: "Hangi ikisi birbirine tamamen zıt ve çelişen ifade içeriyor?", sonraki: 8, key: 'celiski', placeholder: "A VE E veya HİÇBİRİ" },
+            // 7: Çelişki Kuralı (ÇOKLU ŞIK BUTON)
+            { id: 7, soru: "Hangi ikisi birbirine tamamen zıt ve çelişen ifade içeriyor?", sonraki: 8, key: 'celiski', tip: 'ikili_sik_hicbiri' },
 
-            // 8: Destek Tuzağı Kuralı (METİN GİRİŞİ)
-            { id: 8, soru: "Hangi iki şık aynı fikri farklı kelimelerle destekliyor?", sonraki: 9, key: 'destek', placeholder: "C VE D veya HİÇBİRİ" },
+            // 8: Destek Tuzağı Kuralı (ÇOKLU ŞIK BUTON)
+            { id: 8, soru: "Hangi iki şık aynı fikri farklı kelimelerle destekliyor?", sonraki: 9, key: 'destek', tip: 'ikili_sik_hicbiri' },
 
             // 9: Çifte İsim Tuzağı (BUTON)
-            { id: 9, soru: "Şıklardan biri 'İki olayı/kişiyi' aynı anda içeriyor mu?", sonraki: 11, key: 'cifte_isim', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] }
+            { id: 9, soru: "Şıklardan biri 'İki olayı/kişiyi' aynı anda içeriyor mu?", sonraki: 11, key: 'cifte_isim', tip: 'tek', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] }
         ];
         
         const soruMap = {};
         sorular.forEach(s => soruMap[s.id] = s);
+        
+        // Dinamik olarak seçilen şıkları tutmak için
+        let anlikSecilenSiklar = [];
 
         // --- GÖSTERİM VE İLERLEME FONKSİYONLARI ---
 
         function gosterSoru(id) {
             state = id;
+            anlikSecilenSiklar = []; // Yeni soruya geçerken seçilenleri sıfırla
             
             if (id === 11) { finalTahmin(); return; } 
             
             const s = soruMap[id];
             
             // --- AKIŞ KONTROLÜ ---
-            // Metinse Sayısal soruları atla
             if (secimler.tip === "METİN" && (id >= 2 && id <= 31)) { gosterSoru(4); return; } 
-            
-            // Uç Eleme Yoksa, Soru 21'i atla
             if (secimler.uc_eleme_var === "HAYIR" && id === 21) { gosterSoru(3); return; }
-
-            // Teknik Sayı Yoksa, Soru 31'i atla
             if (secimler.teknik_sayi_var === "HAYIR" && id === 31) { gosterSoru(4); return; }
-
-            // Hepsi/Tümü Yoksa, Soru 5'i atla
             if (secimler.hepsi_tumu_var === "HAYIR" && id === 5) { gosterSoru(6); return; }
             
             if (!s) { return; } 
 
             document.getElementById('soruMetni').textContent = s.soru;
-            
             const cevapSecenekleri = document.getElementById('cevapSecenekleri');
             cevapSecenekleri.innerHTML = '';
             
-            if (s.secenekler) {
-                // BUTONLU SEÇENEKLER
+            if (s.tip === 'tek') {
+                // Soru 0, 1, 2, 3, 4, 9 gibi tek cevaplı sorular
                 s.secenekler.forEach(secenek => {
                     const btn = document.createElement('button');
                     btn.className = 'secenek-butonu';
                     btn.textContent = secenek.text;
-                    btn.onclick = () => cevaplaButon(secenek.value, s.key, s.sonraki);
+                    btn.onclick = () => cevaplaTekli(secenek.value, s.key, s.sonraki);
                     cevapSecenekleri.appendChild(btn);
                 });
-            } else {
-                // METİN GİRİŞLİ SEÇENEKLER
-                cevapSecenekleri.innerHTML = `
-                    <input type="text" id="cevapInput" placeholder="${s.placeholder}" onkeyup="if(event.key === 'Enter') { cevaplaMetin(); }">
-                    <button class="cevap-btn" onclick="cevaplaMetin()">Tamam</button>
-                `;
-                document.getElementById('cevapInput').focus();
+            } 
+            else if (s.tip === 'tek_sik') {
+                // Soru 31, 5 gibi tek şık cevaplı sorular (A, B, C...)
+                gosterSikButonlari(s.key, s.sonraki, 'tek');
+            }
+            else if (s.tip === 'coklu_sik' || s.tip === 'ikili_sik_hicbiri' || s.tip === 'coklu_sik_hicbiri') {
+                // Soru 21, 6, 7, 8 gibi çoklu veya ikili şık cevaplı sorular
+                gosterSikButonlari(s.key, s.sonraki, s.tip === 'ikili_sik_hicbiri' ? 'ikili' : 'coklu');
             }
         }
         
-        function cevaplaButon(cevap, key, sonraki) {
+        // --- BUTON TIKLAMA FONKSİYONLARI ---
+
+        function cevaplaTekli(cevap, key, sonraki) {
             secimler[key] = cevap;
             gosterSoru(sonraki);
         }
 
-
-        function cevaplaMetin() {
-            const mevcutSoru = soruMap[state];
-            let cevap = document.getElementById('cevapInput').value.trim().toUpperCase();
+        function gosterSikButonlari(key, sonraki, tip) {
+            const sikSayisi = secimler.sik_sayisi;
+            const HarfSecenekleri = Harfler.slice(0, sikSayisi);
+            const cevapSecenekleri = document.getElementById('cevapSecenekleri');
             
-            if (!cevap) { alert("Lütfen bir cevap girin."); return; }
+            // Şık butonlarını oluştur
+            HarfSecenekleri.forEach(harf => {
+                const btn = document.createElement('button');
+                btn.className = 'secenek-butonu sik-butonu';
+                btn.id = 'btn-' + harf;
+                btn.textContent = harf;
+                btn.onclick = () => sikButonuTiklandi(harf, tip);
+                cevapSecenekleri.appendChild(btn);
+            });
 
-            // --- ÖZEL KONTROLLER ---
-
-            // Soru 0: Şık Sayısı
-            if (mevcutSoru.key === 'sik_sayisi') {
-                 if (cevap !== '4' && cevap !== '5') { alert("Şık sayısı 4 veya 5 olmalıdır."); return; }
-                 secimler[mevcutSoru.key] = parseInt(cevap); 
-            }
-            // Tek Şık Cevapları (Örn: Hepsi/Tümü şıkkı, Teknik Sayı şıkkı)
-            else if (mevcutSoru.key === 'hepsi_tumu_sik' || mevcutSoru.key === 'teknik_sayi_sik') {
-                 if (!Harfler.slice(0, secimler.sik_sayisi).includes(cevap)) { alert("Geçerli bir şık harfi girin."); return; }
-                 secimler[mevcutSoru.key] = cevap;
-            }
-            // Diğer Çoklu Şık Cevapları
-            else {
-                 secimler[mevcutSoru.key] = cevap;
+            // Gerekliyse "HİÇBİRİ" butonu ekle
+            if (tip === 'coklu' || tip === 'ikili' || tip === 'coklu_sik_hicbiri' || tip === 'ikili_sik_hicbiri') {
+                 const hicbiriBtn = document.createElement('button');
+                 hicbiriBtn.className = 'secenek-butonu sik-butonu';
+                 hicbiriBtn.id = 'btn-HICBIRI';
+                 hicbiriBtn.textContent = 'HİÇBİRİ';
+                 hicbiriBtn.onclick = () => sikButonuTiklandi('HİÇBİRİ', tip);
+                 cevapSecenekleri.appendChild(hicbiriBtn);
             }
             
-            // Tüm kontrollerden geçtikten sonra ilerle
-            gosterSoru(mevcutSoru.sonraki);
+            // Onay butonu ekle
+            const onayBtn = document.createElement('button');
+            onayBtn.className = 'cevap-btn';
+            onayBtn.textContent = (tip === 'tek') ? "Devam Et" : "Onayla ve İlerle";
+            onayBtn.disabled = (tip !== 'tek'); // Tek şık değilse başta devre dışı
+            onayBtn.id = 'onay-btn';
+            onayBtn.onclick = () => cevaplaCokluSik(key, sonraki, tip);
+            cevapSecenekleri.appendChild(onayBtn);
+            
+            // Tek şık tipinde önceden seçilen şık varsa onay butonunu etkinleştir
+            if (tip === 'tek') {
+                anlikSecilenSiklar = []; // Tek şık modunda sıfırla
+            }
         }
+
+        function sikButonuTiklandi(harf, tip) {
+            const btn = document.getElementById('btn-' + harf);
+            const onayBtn = document.getElementById('onay-btn');
+            
+            // Tek Şık Modu (A, B, C, D)
+            if (tip === 'tek') {
+                document.querySelectorAll('.sik-butonu').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                anlikSecilenSiklar = [harf];
+                onayBtn.disabled = false;
+            } 
+            // Çoklu Şık Modu (Çoklu veya İkili Şıklar)
+            else {
+                // HİÇBİRİ seçildiyse, diğer tüm seçimleri sıfırla
+                if (harf === 'HİÇBİRİ') {
+                    document.querySelectorAll('.sik-butonu').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    anlikSecilenSiklar = ['HİÇBİRİ'];
+                } else {
+                    // Diğer şıklar seçilirse HİÇBİRİ'ni deaktif et
+                    const hicbiriBtn = document.getElementById('btn-HICBIRI');
+                    if(hicbiriBtn) hicbiriBtn.classList.remove('active');
+
+                    if (btn.classList.contains('active')) {
+                        btn.classList.remove('active');
+                        anlikSecilenSiklar = anlikSecilenSiklar.filter(s => s !== harf);
+                    } else {
+                        // İkili şık kuralı (Soru 7 ve 8)
+                        if (tip.startsWith('ikili') && anlikSecilenSiklar.length >= 2) {
+                            alert("Bu soru için sadece iki şık seçebilirsiniz.");
+                            return;
+                        }
+                        btn.classList.add('active');
+                        anlikSecilenSiklar.push(harf);
+                    }
+                    anlikSecilenSiklar = anlikSecilenSiklar.filter(s => s !== 'HİÇBİRİ'); // HİÇBİRİ'yi çıkar
+                }
+                
+                // Onay butonunu etkinleştirme
+                if (tip.startsWith('ikili')) {
+                    // İkili modda, 2 şık veya HİÇBİRİ seçiliyse
+                    onayBtn.disabled = !(anlikSecilenSiklar.length === 2 || anlikSecilenSiklar[0] === 'HİÇBİRİ');
+                } else {
+                    // Çoklu modda, 1 veya daha fazla şık veya HİÇBİRİ seçiliyse
+                    onayBtn.disabled = anlikSecilenSiklar.length === 0;
+                }
+            }
+        }
+
+        function cevaplaCokluSik(key, sonraki, tip) {
+            let cevapStr = '';
+            
+            if (anlikSecilenSiklar[0] === 'HİÇBİRİ' || anlikSecilenSiklar.length === 0) {
+                 cevapStr = 'HİÇBİRİ';
+            } 
+            else if (tip === 'tek_sik') {
+                 cevapStr = anlikSecilenSiklar[0]; // Tek şık için sadece harf
+            }
+            else if (tip.startsWith('ikili')) {
+                // İkili şık (Çelişki, Destek) formatı "A VE E"
+                if (anlikSecilenSiklar.length === 2) {
+                    cevapStr = anlikSecilenSiklar[0] + " VE " + anlikSecilenSiklar[1];
+                } else {
+                    alert("Bu soru için iki şık seçmelisiniz."); return;
+                }
+            }
+            else {
+                // Çoklu şık formatı (Virgülle ayrılmış)
+                cevapStr = anlikSecilenSiklar.join(', ');
+            }
+
+            secimler[key] = cevapStr;
+            gosterSoru(sonraki);
+        }
+        
+        // --- FİNAL TAHMİN FONKSİYONU ---
 
         function finalTahmin() {
             const sikSayisi = secimler.sik_sayisi;
