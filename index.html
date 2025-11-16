@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sallama Dedektifi V14.1 (Tam Kontrol)</title>
+    <title>Sallama Dedektifi V1.2 (Son Düzeltme)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -82,7 +82,7 @@
 <body>
 
     <div class="container">
-        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.4.1)</h1>
+        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.1.2)</h1>
         
         <div id="diyalogAlani">
             <div class="soru-metni" id="soruMetni"></div>
@@ -111,7 +111,7 @@
             // 0: Şık Sayısı
             { id: 0, soru: "Soru kaç şıklı? (Cevap: 4 veya 5)", sonraki: 1, key: 'sik_sayisi', placeholder: "4 veya 5" },
             
-            // 1: Şık Tipi - Düzeltildi
+            // 1: Şık Tipi
             { id: 1, soru: "Şıklar sayısal mı yoksa metin mi içeriyor? (Cevap: SAYISAL veya METİN)", sonraki: 2, key: 'tip', placeholder: "SAYISAL veya METİN" },
             
             // 2: Uç Eleme (EVET/HAYIR)
@@ -188,15 +188,17 @@
             
             if (!cevap) { alert("Lütfen bir cevap girin."); return; }
 
-            // --- ÖZEL KONTROLLER ---
+            // --- ÖZEL KONTROLLER (Sıralama Değiştirildi) ---
 
+            // Soru 0: Şık Sayısı
             if (mevcutSoru.key === 'sik_sayisi') {
                  if (cevap !== '4' && cevap !== '5') { alert("Şık sayısı 4 veya 5 olmalıdır."); return; }
                  secimler[mevcutSoru.key] = parseInt(cevap); 
                  gosterSoru(mevcutSoru.sonraki);
                  return;
             }
-            // Soru 1: Tip Kontrolü - Düzeltildi
+            
+            // Soru 1: Tip Kontrolü
             if (mevcutSoru.key === 'tip') {
                  if (cevap !== 'SAYISAL' && cevap !== 'METİN') { alert("Cevap SAYISAL veya METİN olmalıdır."); return; }
                  secimler[mevcutSoru.key] = cevap;
@@ -204,14 +206,6 @@
                  return;
             }
 
-            // EVET/HAYIR Soruları
-            if (['uc_eleme_var', 'teknik_sayi_var', 'hepsi_tumu_var', 'cifte_isim'].includes(mevcutSoru.key)) {
-                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
-                 secimler[mevcutSoru.key] = cevap;
-                 gosterSoru(mevcutSoru.sonraki);
-                 return;
-            }
-             
             // Tek Şık Cevapları (Örn: Hepsi/Tümü şıkkı, Teknik Sayı şıkkı)
             if (mevcutSoru.key === 'hepsi_tumu_sik' || mevcutSoru.key === 'teknik_sayi_sik') {
                  if (!Harfler.slice(0, secimler.sik_sayisi).includes(cevap)) { alert("Geçerli bir şık harfi girin."); return; }
@@ -219,8 +213,16 @@
                  gosterSoru(mevcutSoru.sonraki);
                  return;
             }
+            
+            // EVET/HAYIR Soruları (Sıralama sonraki konuma alındı)
+            if (['uc_eleme_var', 'teknik_sayi_var', 'hepsi_tumu_var', 'cifte_isim'].includes(mevcutSoru.key)) {
+                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
+                 secimler[mevcutSoru.key] = cevap;
+                 gosterSoru(mevcutSoru.sonraki);
+                 return;
+            }
 
-            // Çoklu Şık Cevapları (Örn: Destek, Çelişki, Uç Olmayanlar)
+            // Çoklu Şık Cevapları (Örn: Destek, Çelişki, Uç Olmayanlar, Kısıtlayıcı)
             secimler[mevcutSoru.key] = cevap;
             gosterSoru(mevcutSoru.sonraki);
         }
