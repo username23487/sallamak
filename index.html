@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sallama Dedektifi V14.0 (Tam Kontrol)</title>
+    <title>Sallama Dedektifi V14.1 (Tam Kontrol)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -82,7 +82,7 @@
 <body>
 
     <div class="container">
-        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.4)</h1>
+        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.4.1)</h1>
         
         <div id="diyalogAlani">
             <div class="soru-metni" id="soruMetni"></div>
@@ -111,19 +111,19 @@
             // 0: Şık Sayısı
             { id: 0, soru: "Soru kaç şıklı? (Cevap: 4 veya 5)", sonraki: 1, key: 'sik_sayisi', placeholder: "4 veya 5" },
             
-            // 1: Şık Tipi
+            // 1: Şık Tipi - Düzeltildi
             { id: 1, soru: "Şıklar sayısal mı yoksa metin mi içeriyor? (Cevap: SAYISAL veya METİN)", sonraki: 2, key: 'tip', placeholder: "SAYISAL veya METİN" },
             
             // 2: Uç Eleme (EVET/HAYIR)
             { id: 2, soru: "Sayısal şıklarda, en küçük ve en büyük şık arasında çok büyük bir fark var mı? (Cevap: EVET veya HAYIR)", sonraki: 21, key: 'uc_eleme_var', placeholder: "EVET veya HAYIR" },
             
-            // YENİ 21: Uç Olmayanlar
+            // 21: Uç Olmayanlar
             { id: 21, soru: "Uç değer tuzağı varsa: Hangi şıklar uç değer **DEĞİLDİR** (ortada kalmıştır)? (Cevap: B VE C veya B, C, D)", sonraki: 3, key: 'uc_olmayan_sik', placeholder: "Örn: B VE C" },
 
             // 3: Nadir Kelimeler/Yuvarlak Sayılar (EVET/HAYIR)
             { id: 3, soru: "Şıklardan biri '9.81' gibi teknik bir sayı içerirken, diğeri '10' gibi yuvarlak bir sayı içeriyor mu? (Cevap: EVET veya HAYIR)", sonraki: 31, key: 'teknik_sayi_var', placeholder: "EVET veya HAYIR" }, 
             
-            // YENİ 31: Teknik Sayı Hangi Şıkta?
+            // 31: Teknik Sayı Hangi Şıkta?
             { id: 31, soru: "Hangi şık küsuratlı teknik sayıyı içeriyor? (Cevap: A, B, C, D veya E)", sonraki: 4, key: 'teknik_sayi_sik', placeholder: "A, B, C, D veya E" },
 
             // 4: Hepsi/Tümü Kuralı (Metin)
@@ -196,8 +196,9 @@
                  gosterSoru(mevcutSoru.sonraki);
                  return;
             }
+            // Soru 1: Tip Kontrolü - Düzeltildi
             if (mevcutSoru.key === 'tip') {
-                 if (cevap !== 'SAYISAL' && cevap !== 'METİN') { alert("Tip SAYISAL veya METİN olmalıdır."); return; }
+                 if (cevap !== 'SAYISAL' && cevap !== 'METİN') { alert("Cevap SAYISAL veya METİN olmalıdır."); return; }
                  secimler[mevcutSoru.key] = cevap;
                  gosterSoru(mevcutSoru.sonraki);
                  return;
