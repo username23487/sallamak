@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sallama Dedektifi V1.2 (Son Düzeltme)</title>
+    <title>Sallama Dedektifi V14.3 (Akış Kontrol Düzeltmesi)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -82,7 +82,7 @@
 <body>
 
     <div class="container">
-        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.1.2)</h1>
+        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.4.3)</h1>
         
         <div id="diyalogAlani">
             <div class="soru-metni" id="soruMetni"></div>
@@ -188,42 +188,49 @@
             
             if (!cevap) { alert("Lütfen bir cevap girin."); return; }
 
-            // --- ÖZEL KONTROLLER (Sıralama Değiştirildi) ---
+            // --- ÖZEL KONTROLLER (EVET/HAYIR kontrolleri tek tek ayrıldı) ---
 
             // Soru 0: Şık Sayısı
             if (mevcutSoru.key === 'sik_sayisi') {
                  if (cevap !== '4' && cevap !== '5') { alert("Şık sayısı 4 veya 5 olmalıdır."); return; }
                  secimler[mevcutSoru.key] = parseInt(cevap); 
-                 gosterSoru(mevcutSoru.sonraki);
-                 return;
             }
-            
             // Soru 1: Tip Kontrolü
-            if (mevcutSoru.key === 'tip') {
+            else if (mevcutSoru.key === 'tip') {
                  if (cevap !== 'SAYISAL' && cevap !== 'METİN') { alert("Cevap SAYISAL veya METİN olmalıdır."); return; }
                  secimler[mevcutSoru.key] = cevap;
-                 gosterSoru(mevcutSoru.sonraki);
-                 return;
             }
-
-            // Tek Şık Cevapları (Örn: Hepsi/Tümü şıkkı, Teknik Sayı şıkkı)
-            if (mevcutSoru.key === 'hepsi_tumu_sik' || mevcutSoru.key === 'teknik_sayi_sik') {
-                 if (!Harfler.slice(0, secimler.sik_sayisi).includes(cevap)) { alert("Geçerli bir şık harfi girin."); return; }
-                 secimler[mevcutSoru.key] = cevap;
-                 gosterSoru(mevcutSoru.sonraki);
-                 return;
-            }
-            
-            // EVET/HAYIR Soruları (Sıralama sonraki konuma alındı)
-            if (['uc_eleme_var', 'teknik_sayi_var', 'hepsi_tumu_var', 'cifte_isim'].includes(mevcutSoru.key)) {
+            // Soru 2: Uç Eleme Var mı?
+            else if (mevcutSoru.key === 'uc_eleme_var') {
                  if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
                  secimler[mevcutSoru.key] = cevap;
-                 gosterSoru(mevcutSoru.sonraki);
-                 return;
             }
-
+            // Soru 3: Teknik Sayı Var mı?
+            else if (mevcutSoru.key === 'teknik_sayi_var') {
+                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
+                 secimler[mevcutSoru.key] = cevap;
+            }
+            // Soru 4: Hepsi/Tümü Var mı?
+            else if (mevcutSoru.key === 'hepsi_tumu_var') {
+                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
+                 secimler[mevcutSoru.key] = cevap;
+            }
+            // Soru 9: Çifte İsim Var mı?
+            else if (mevcutSoru.key === 'cifte_isim') {
+                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
+                 secimler[mevcutSoru.key] = cevap;
+            }
+            // Tek Şık Cevapları (Örn: Hepsi/Tümü şıkkı, Teknik Sayı şıkkı)
+            else if (mevcutSoru.key === 'hepsi_tumu_sik' || mevcutSoru.key === 'teknik_sayi_sik') {
+                 if (!Harfler.slice(0, secimler.sik_sayisi).includes(cevap)) { alert("Geçerli bir şık harfi girin."); return; }
+                 secimler[mevcutSoru.key] = cevap;
+            }
             // Çoklu Şık Cevapları (Örn: Destek, Çelişki, Uç Olmayanlar, Kısıtlayıcı)
-            secimler[mevcutSoru.key] = cevap;
+            else {
+                 secimler[mevcutSoru.key] = cevap;
+            }
+            
+            // Tüm kontrollerden geçtikten sonra ilerle
             gosterSoru(mevcutSoru.sonraki);
         }
 
