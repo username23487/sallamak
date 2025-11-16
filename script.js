@@ -6,7 +6,7 @@ const sorular = [
     // 0: Şık Sayısı (BUTON)
     { id: 0, soru: "Soru kaç şıklı?", sonraki: 1, key: 'sik_sayisi', tip: 'tek', secenekler: [{text: "4 Şık (A-B-C-D)", value: 4}, {text: "5 Şık (A-B-C-D-E)", value: 5}] },
     
-    // 1: Şık Tipi (BUTON) - Sorunlu buton burada tekrar kontrol edildi.
+    // 1: Şık Tipi (BUTON) - Hata potansiyelinin yüksek olduğu yer.
     { id: 1, soru: "Şıklar sayısal mı yoksa metin mi içeriyor?", sonraki: 2, key: 'tip', tip: 'tek', secenekler: [{text: "Sayısal", value: "SAYISAL"}, {text: "Metin", value: "METİN"}] },
     
     // 2: Uç Eleme (BUTON)
@@ -56,6 +56,7 @@ function gosterSoru(id) {
     const s = soruMap[id];
     
     // --- AKIŞ KONTROLÜ ---
+    // Metinse Sayısal soruları atla
     if (secimler.tip === "METİN" && (id >= 2 && id <= 31)) { gosterSoru(4); return; } 
     
     if (secimler.uc_eleme_var === "HAYIR" && id === 21) { gosterSoru(3); return; }
@@ -73,6 +74,8 @@ function gosterSoru(id) {
         s.secenekler.forEach(secenek => {
             const btn = document.createElement('button');
             btn.className = 'secenek-butonu';
+            // Butona benzersiz bir ID vererek çakışma ihtimalini ortadan kaldırıyoruz
+            btn.id = 'secenek-' + secenek.value; 
             btn.textContent = secenek.text;
             btn.onclick = () => cevaplaTekli(secenek.value, s.key, s.sonraki);
             cevapSecenekleri.appendChild(btn);
@@ -89,12 +92,18 @@ function gosterSoru(id) {
 // --- BUTON TIKLAMA FONKSİYONLARI ---
 
 function cevaplaTekli(cevap, key, sonraki) {
+    // Gelen cevabın string olduğundan emin olmak için ekstra kontrol
     if (key === 'sik_sayisi') {
          secimler[key] = parseInt(cevap); 
     } else {
-         secimler[key] = cevap;
+         secimler[key] = String(cevap); // Cevabın kesinlikle string olarak kaydedildiğinden emin oluyoruz.
     }
-    gosterSoru(sonraki);
+    // İlerleme kontrolü
+    if (sonraki === 2 && secimler.tip === "METİN") {
+        gosterSoru(4); // Metin seçildiyse sayısal soruları atla (Soru 2'den Soru 4'e geç)
+    } else {
+        gosterSoru(sonraki);
+    }
 }
 
 function gosterSikButonlari(key, sonraki, tip) {
@@ -133,14 +142,12 @@ function sikButonuTiklandi(harf, tip) {
     const btn = document.getElementById('btn-' + harf);
     const onayBtn = document.getElementById('onay-btn');
     
-    // Tek Şık Modu (Soru 31, 5)
     if (tip === 'tek_sik') {
         document.querySelectorAll('.sik-butonu').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         anlikSecilenSiklar = [harf];
         onayBtn.disabled = false;
     } 
-    // Çoklu Şık Modu (Soru 21, 6, 7, 8)
     else {
         if (harf === 'HİÇBİRİ') {
             document.querySelectorAll('.sik-butonu').forEach(b => b.classList.remove('active'));
@@ -164,7 +171,6 @@ function sikButonuTiklandi(harf, tip) {
             anlikSecilenSiklar = anlikSecilenSiklar.filter(s => s !== 'HİÇBİRİ'); 
         }
         
-        // Onay butonunu etkinleştirme
         if (tip.startsWith('ikili')) {
             onayBtn.disabled = !(anlikSecilenSiklar.length === 2 || anlikSecilenSiklar[0] === 'HİÇBİRİ');
         } else {
