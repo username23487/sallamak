@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sallama Dedektifi V15.1 (Buton Fix)</title>
+    <title>Sallama Dedektifi V15.2 (Final Buton Fix)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -88,7 +88,7 @@
 <body>
 
     <div class="container">
-        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.5.1)</h1>
+        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.5.2)</h1>
         
         <div id="diyalogAlani">
             <div class="soru-metni" id="soruMetni"></div>
@@ -117,7 +117,7 @@
             // 0: Şık Sayısı (BUTON)
             { id: 0, soru: "Soru kaç şıklı?", sonraki: 1, key: 'sik_sayisi', tip: 'tek', secenekler: [{text: "4 Şık (A-B-C-D)", value: 4}, {text: "5 Şık (A-B-C-D-E)", value: 5}] },
             
-            // 1: Şık Tipi (BUTON) - HATA BURADAYDI, TEKRAR KONTROL EDİLDİ
+            // 1: Şık Tipi (BUTON)
             { id: 1, soru: "Şıklar sayısal mı yoksa metin mi içeriyor?", sonraki: 2, key: 'tip', tip: 'tek', secenekler: [{text: "Sayısal", value: "SAYISAL"}, {text: "Metin", value: "METİN"}] },
             
             // 2: Uç Eleme (BUTON)
@@ -187,22 +187,23 @@
                     const btn = document.createElement('button');
                     btn.className = 'secenek-butonu';
                     btn.textContent = secenek.text;
+                    // Tıklama olayını doğrudan atıyoruz
                     btn.onclick = () => cevaplaTekli(secenek.value, s.key, s.sonraki);
                     cevapSecenekleri.appendChild(btn);
                 });
             } 
             else if (s.tip === 'tek_sik') {
-                gosterSikButonlari(s.key, s.sonraki, 'tek');
+                gosterSikButonlari(s.key, s.sonraki, 'tek_sik');
             }
             else if (s.tip === 'coklu_sik' || s.tip === 'ikili_sik_hicbiri' || s.tip === 'coklu_sik_hicbiri') {
-                gosterSikButonlari(s.key, s.sonraki, s.tip === 'ikili_sik_hicbiri' ? 'ikili' : 'coklu');
+                gosterSikButonlari(s.key, s.sonraki, s.tip.startsWith('ikili') ? 'ikili' : 'coklu');
             }
         }
         
         // --- BUTON TIKLAMA FONKSİYONLARI ---
 
         function cevaplaTekli(cevap, key, sonraki) {
-            // Soru 0 için değeri sayıya çevir
+            // Sadece şık sayısını sayıya çeviriyoruz, diğer stringler (SAYISAL/METİN) olduğu gibi kalıyor.
             if (key === 'sik_sayisi') {
                  secimler[key] = parseInt(cevap); 
             } else {
@@ -225,7 +226,7 @@
                 cevapSecenekleri.appendChild(btn);
             });
 
-            if (tip === 'coklu' || tip === 'ikili' || tip === 'coklu_sik_hicbiri' || tip === 'ikili_sik_hicbiri') {
+            if (tip === 'coklu' || tip === 'ikili') {
                  const hicbiriBtn = document.createElement('button');
                  hicbiriBtn.className = 'secenek-butonu sik-butonu';
                  hicbiriBtn.id = 'btn-HICBIRI';
@@ -236,8 +237,8 @@
             
             const onayBtn = document.createElement('button');
             onayBtn.className = 'cevap-btn';
-            onayBtn.textContent = (tip === 'tek') ? "Devam Et" : "Onayla ve İlerle";
-            onayBtn.disabled = (tip !== 'tek' && tip !== 'tek_sik'); 
+            onayBtn.textContent = (tip === 'tek_sik') ? "Devam Et" : "Onayla ve İlerle";
+            onayBtn.disabled = (tip !== 'tek_sik'); 
             onayBtn.id = 'onay-btn';
             onayBtn.onclick = () => cevaplaCokluSik(key, sonraki, tip);
             cevapSecenekleri.appendChild(onayBtn);
@@ -248,7 +249,7 @@
             const onayBtn = document.getElementById('onay-btn');
             
             // Tek Şık Modu (Soru 31, 5)
-            if (tip === 'tek' || tip === 'tek_sik') {
+            if (tip === 'tek_sik') {
                 document.querySelectorAll('.sik-butonu').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 anlikSecilenSiklar = [harf];
@@ -298,12 +299,15 @@
             }
             else if (tip.startsWith('ikili')) {
                 if (anlikSecilenSiklar.length === 2) {
+                    // İkili şık cevabını "A VE B" formatında kaydet
                     cevapStr = anlikSecilenSiklar[0] + " VE " + anlikSecilenSiklar[1];
-                } else if (anlikSecilenSiklar.length === 0) {
-                     cevapStr = 'HİÇBİRİ'; // Hiçbir şık seçilmediyse HİÇBİRİ olarak kabul et (buton engellemesine rağmen önlem)
+                } else {
+                    // Onay butonu zaten bunu engelliyor olmalı, ama ekstra kontrol
+                    alert("Bu soru için iki şık seçmeniz gerekiyordu."); return;
                 }
             }
             else {
+                // Çoklu şık cevabını "A, C, D" formatında kaydet
                 cevapStr = anlikSecilenSiklar.join(', ');
             }
 
@@ -312,7 +316,7 @@
         }
         
         // --- FİNAL TAHMİN FONKSİYONU ---
-        // (Bu kısım aynı kaldı)
+        
         function finalTahmin() {
             const sikSayisi = secimler.sik_sayisi;
             if (!sikSayisi) { alert("Şık sayısı bilgisi alınamadı. Lütfen yeniden başlayın."); return; }
