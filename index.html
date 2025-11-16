@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sallama Dedektifi V14.3 (Akış Kontrol Düzeltmesi)</title>
+    <title>Sallama Dedektifi V14.4 (Buton Seçenekli)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -52,6 +52,21 @@
         button.cevap-btn:hover {
             background-color: #8e44ad;
         }
+        .secenek-butonu {
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 2px solid #3498db;
+            background-color: #f2faff;
+            color: #3498db;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            font-weight: bold;
+        }
+        .secenek-butonu:hover {
+            background-color: #3498db;
+            color: white;
+        }
         #sonucAlani {
             margin-top: 25px;
             padding: 20px;
@@ -82,7 +97,7 @@
 <body>
 
     <div class="container">
-        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.4.3)</h1>
+        <h1>🥚 Eggapps | Sallama Dedektifi: ULTRA SÜRÜM (V1.4.4)</h1>
         
         <div id="diyalogAlani">
             <div class="soru-metni" id="soruMetni"></div>
@@ -111,38 +126,38 @@
             // 0: Şık Sayısı
             { id: 0, soru: "Soru kaç şıklı? (Cevap: 4 veya 5)", sonraki: 1, key: 'sik_sayisi', placeholder: "4 veya 5" },
             
-            // 1: Şık Tipi
-            { id: 1, soru: "Şıklar sayısal mı yoksa metin mi içeriyor? (Cevap: SAYISAL veya METİN)", sonraki: 2, key: 'tip', placeholder: "SAYISAL veya METİN" },
+            // 1: Şık Tipi (BUTON)
+            { id: 1, soru: "Şıklar sayısal mı yoksa metin mi içeriyor?", sonraki: 2, key: 'tip', secenekler: [{text: "Sayısal", value: "SAYISAL"}, {text: "Metin", value: "METİN"}] },
             
-            // 2: Uç Eleme (EVET/HAYIR)
-            { id: 2, soru: "Sayısal şıklarda, en küçük ve en büyük şık arasında çok büyük bir fark var mı? (Cevap: EVET veya HAYIR)", sonraki: 21, key: 'uc_eleme_var', placeholder: "EVET veya HAYIR" },
+            // 2: Uç Eleme (BUTON)
+            { id: 2, soru: "Sayısal şıklarda, en küçük ve en büyük şık arasında çok büyük bir fark var mı?", sonraki: 21, key: 'uc_eleme_var', secenekler: [{text: "Evet, var", value: "EVET"}, {text: "Hayır, yok", value: "HAYIR"}] },
             
-            // 21: Uç Olmayanlar
-            { id: 21, soru: "Uç değer tuzağı varsa: Hangi şıklar uç değer **DEĞİLDİR** (ortada kalmıştır)? (Cevap: B VE C veya B, C, D)", sonraki: 3, key: 'uc_olmayan_sik', placeholder: "Örn: B VE C" },
+            // 21: Uç Olmayanlar (METİN GİRİŞİ)
+            { id: 21, soru: "Uç değer tuzağı varsa: Hangi şıklar uç değer **DEĞİLDİR** (ortada kalmıştır)?", sonraki: 3, key: 'uc_olmayan_sik', placeholder: "Örn: B VE C" },
 
-            // 3: Nadir Kelimeler/Yuvarlak Sayılar (EVET/HAYIR)
-            { id: 3, soru: "Şıklardan biri '9.81' gibi teknik bir sayı içerirken, diğeri '10' gibi yuvarlak bir sayı içeriyor mu? (Cevap: EVET veya HAYIR)", sonraki: 31, key: 'teknik_sayi_var', placeholder: "EVET veya HAYIR" }, 
+            // 3: Nadir Kelimeler/Yuvarlak Sayılar (BUTON)
+            { id: 3, soru: "Şıklardan biri '9.81' gibi teknik bir sayı içerirken, diğeri '10' gibi yuvarlak bir sayı içeriyor mu?", sonraki: 31, key: 'teknik_sayi_var', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] }, 
             
-            // 31: Teknik Sayı Hangi Şıkta?
-            { id: 31, soru: "Hangi şık küsuratlı teknik sayıyı içeriyor? (Cevap: A, B, C, D veya E)", sonraki: 4, key: 'teknik_sayi_sik', placeholder: "A, B, C, D veya E" },
+            // 31: Teknik Sayı Hangi Şıkta? (METİN GİRİŞİ)
+            { id: 31, soru: "Hangi şık küsuratlı teknik sayıyı içeriyor?", sonraki: 4, key: 'teknik_sayi_sik', placeholder: "A, B, C, D veya E" },
 
-            // 4: Hepsi/Tümü Kuralı (Metin)
-            { id: 4, soru: "Şıklardan biri 'Hepsi', 'Tümü' gibi kapsayıcı ifadeler içeriyor mu? (Cevap: EVET veya HAYIR)", sonraki: 5, key: 'hepsi_tumu_var', placeholder: "EVET veya HAYIR" },
+            // 4: Hepsi/Tümü Kuralı (BUTON)
+            { id: 4, soru: "Şıklardan biri 'Hepsi', 'Tümü' gibi kapsayıcı ifadeler içeriyor mu?", sonraki: 5, key: 'hepsi_tumu_var', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] },
             
-            // 5: Hangi Şık Hepsi/Tümü İçeriyor? (Metin)
-            { id: 5, soru: "Hangi şık, 'Hepsi/Tümü' ifadesini içeriyor? (Cevap: A, B, C, D veya E)", sonraki: 6, key: 'hepsi_tumu_sik', placeholder: "A, B, C, D veya E" },
+            // 5: Hangi Şık Hepsi/Tümü İçeriyor? (METİN GİRİŞİ)
+            { id: 5, soru: "Hangi şık, 'Hepsi/Tümü' ifadesini içeriyor?", sonraki: 6, key: 'hepsi_tumu_sik', placeholder: "A, B, C, D veya E" },
             
-            // 6: Aşırı Genelleme/Kısıtlama (Çoklu Giriş)
-            { id: 6, soru: "Hangi şıklar 'yalnızca', 'mutlak', 'tek nedeni' gibi çok kısıtlayıcı kelimeler içeriyor? (Cevap: A, B, D veya HİÇBİRİ)", sonraki: 7, key: 'kisitlayici', placeholder: "A, B, D veya HİÇBİRİ" },
+            // 6: Aşırı Genelleme/Kısıtlama (METİN GİRİŞİ)
+            { id: 6, soru: "Hangi şıklar 'yalnızca', 'mutlak', 'tek nedeni' gibi çok kısıtlayıcı kelimeler içeriyor?", sonraki: 7, key: 'kisitlayici', placeholder: "A, B, D veya HİÇBİRİ" },
 
-            // 7: Çelişki Kuralı (Çoklu Giriş)
-            { id: 7, soru: "Hangi ikisi birbirine tamamen zıt ve çelişen ifade içeriyor? (Cevap: A VE E veya HİÇBİRİ)", sonraki: 8, key: 'celiski', placeholder: "A VE E veya HİÇBİRİ" },
+            // 7: Çelişki Kuralı (METİN GİRİŞİ)
+            { id: 7, soru: "Hangi ikisi birbirine tamamen zıt ve çelişen ifade içeriyor?", sonraki: 8, key: 'celiski', placeholder: "A VE E veya HİÇBİRİ" },
 
-            // 8: Destek Tuzağı Kuralı (Çoklu Giriş)
-            { id: 8, soru: "Hangi iki şık aynı fikri farklı kelimelerle destekliyor? (Cevap: C VE D veya HİÇBİRİ)", sonraki: 9, key: 'destek', placeholder: "C VE D veya HİÇBİRİ" },
+            // 8: Destek Tuzağı Kuralı (METİN GİRİŞİ)
+            { id: 8, soru: "Hangi iki şık aynı fikri farklı kelimelerle destekliyor?", sonraki: 9, key: 'destek', placeholder: "C VE D veya HİÇBİRİ" },
 
-            // 9: Çifte İsim Tuzağı (Metin)
-            { id: 9, soru: "Şıklardan biri 'İki olayı/kişiyi' aynı anda içeriyor mu? (Cevap: EVET veya HAYIR)", sonraki: 11, key: 'cifte_isim', placeholder: "EVET veya HAYIR" }
+            // 9: Çifte İsim Tuzağı (BUTON)
+            { id: 9, soru: "Şıklardan biri 'İki olayı/kişiyi' aynı anda içeriyor mu?", sonraki: 11, key: 'cifte_isim', secenekler: [{text: "Evet, içeriyor", value: "EVET"}, {text: "Hayır, içermiyor", value: "HAYIR"}] }
         ];
         
         const soruMap = {};
@@ -174,13 +189,33 @@
 
             document.getElementById('soruMetni').textContent = s.soru;
             
-            // Tüm Girişler Metin Kutusu
-            document.getElementById('cevapSecenekleri').innerHTML = `
-                <input type="text" id="cevapInput" placeholder="${s.placeholder}" onkeyup="if(event.key === 'Enter') { cevaplaMetin(); }">
-                <button class="cevap-btn" onclick="cevaplaMetin()">Tamam</button>
-            `;
-            document.getElementById('cevapInput').focus();
+            const cevapSecenekleri = document.getElementById('cevapSecenekleri');
+            cevapSecenekleri.innerHTML = '';
+            
+            if (s.secenekler) {
+                // BUTONLU SEÇENEKLER
+                s.secenekler.forEach(secenek => {
+                    const btn = document.createElement('button');
+                    btn.className = 'secenek-butonu';
+                    btn.textContent = secenek.text;
+                    btn.onclick = () => cevaplaButon(secenek.value, s.key, s.sonraki);
+                    cevapSecenekleri.appendChild(btn);
+                });
+            } else {
+                // METİN GİRİŞLİ SEÇENEKLER
+                cevapSecenekleri.innerHTML = `
+                    <input type="text" id="cevapInput" placeholder="${s.placeholder}" onkeyup="if(event.key === 'Enter') { cevaplaMetin(); }">
+                    <button class="cevap-btn" onclick="cevaplaMetin()">Tamam</button>
+                `;
+                document.getElementById('cevapInput').focus();
+            }
         }
+        
+        function cevaplaButon(cevap, key, sonraki) {
+            secimler[key] = cevap;
+            gosterSoru(sonraki);
+        }
+
 
         function cevaplaMetin() {
             const mevcutSoru = soruMap[state];
@@ -188,44 +223,19 @@
             
             if (!cevap) { alert("Lütfen bir cevap girin."); return; }
 
-            // --- ÖZEL KONTROLLER (EVET/HAYIR kontrolleri tek tek ayrıldı) ---
+            // --- ÖZEL KONTROLLER ---
 
             // Soru 0: Şık Sayısı
             if (mevcutSoru.key === 'sik_sayisi') {
                  if (cevap !== '4' && cevap !== '5') { alert("Şık sayısı 4 veya 5 olmalıdır."); return; }
                  secimler[mevcutSoru.key] = parseInt(cevap); 
             }
-            // Soru 1: Tip Kontrolü
-            else if (mevcutSoru.key === 'tip') {
-                 if (cevap !== 'SAYISAL' && cevap !== 'METİN') { alert("Cevap SAYISAL veya METİN olmalıdır."); return; }
-                 secimler[mevcutSoru.key] = cevap;
-            }
-            // Soru 2: Uç Eleme Var mı?
-            else if (mevcutSoru.key === 'uc_eleme_var') {
-                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
-                 secimler[mevcutSoru.key] = cevap;
-            }
-            // Soru 3: Teknik Sayı Var mı?
-            else if (mevcutSoru.key === 'teknik_sayi_var') {
-                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
-                 secimler[mevcutSoru.key] = cevap;
-            }
-            // Soru 4: Hepsi/Tümü Var mı?
-            else if (mevcutSoru.key === 'hepsi_tumu_var') {
-                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
-                 secimler[mevcutSoru.key] = cevap;
-            }
-            // Soru 9: Çifte İsim Var mı?
-            else if (mevcutSoru.key === 'cifte_isim') {
-                 if (cevap !== 'EVET' && cevap !== 'HAYIR') { alert("Cevap EVET veya HAYIR olmalıdır."); return; }
-                 secimler[mevcutSoru.key] = cevap;
-            }
             // Tek Şık Cevapları (Örn: Hepsi/Tümü şıkkı, Teknik Sayı şıkkı)
             else if (mevcutSoru.key === 'hepsi_tumu_sik' || mevcutSoru.key === 'teknik_sayi_sik') {
                  if (!Harfler.slice(0, secimler.sik_sayisi).includes(cevap)) { alert("Geçerli bir şık harfi girin."); return; }
                  secimler[mevcutSoru.key] = cevap;
             }
-            // Çoklu Şık Cevapları (Örn: Destek, Çelişki, Uç Olmayanlar, Kısıtlayıcı)
+            // Diğer Çoklu Şık Cevapları
             else {
                  secimler[mevcutSoru.key] = cevap;
             }
